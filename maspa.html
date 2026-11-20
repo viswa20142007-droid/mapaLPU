@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa LPU - Lovely Professional University Campus Map</title>
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #f37021; /* LPU Signature Orange */
+            --primary-dark: #d95d14;
+            --secondary-color: #1e293b;
+            --bg-light: #f8fafc;
+            --card-bg: #ffffff;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            scroll-behavior: smooth;
+            line-height: 1.6;
+        }
+
+        /* Header & Navigation */
+        header {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 1rem 5%;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+        }
+
+        .logo span {
+            color: var(--primary-color);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+
+        nav a {
+            color: #cbd5e1;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--secondary-color) 0%, #334155 100%);
+            color: white;
+            padding: 4rem 5%;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            color: #cbd5e1;
+            max-width: 600px;
+            margin: 0 auto 2rem auto;
+            font-size: 1.1rem;
+        }
+
+        /* Search Bar */
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto;
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-container input {
+            flex: 1;
+            padding: 14px 20px;
+            border-radius: 8px;
+            border: none;
+            font-size: 1rem;
+            outline: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* Main Container */
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 5%;
+        }
+
+        /* Category Filter Buttons */
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .filter-btn {
+            padding: 8px 18px;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            color: var(--text-dark);
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        /* Campus Locations Grid */
+        .locations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 3rem;
+        }
+
+        .location-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .location-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: 6px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            width: fit-content;
+        }
+
+        .badge.academic { background: #dbeafe; color: #1e40af; }
+        .badge.food { background: #fef3c7; color: #92400e; }
+        .badge.sports { background: #dcfce7; color: #166534; }
+        .badge.admin { background: #f3e8ff; color: #6b21a8; }
+
+        .location-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .location-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+
+        .directions-btn {
+            background: var(--bg-light);
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .directions-btn:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        /* Interactive Map Preview Section */
+        .map-section {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 3rem;
+        }
+
+        .map-section h2 {
+            margin-bottom: 1rem;
+            color: var(--secondary-color);
+        }
+
+        .map-frame {
+            width: 100%;
+            height: 400px;
+            border-radius: 8px;
+            border: none;
+            background-color: #e2e8f0;
+        }
+
+        /* Suggest Missing Location Section */
+        .contribute-section {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 3rem;
+        }
+
+        .contribute-section h2 {
+            color: var(--secondary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .contribute-section > p {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .contribute-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary-color);
+        }
+
+        .submit-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            width: fit-content;
+        }
+
+        .submit-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .toast-banner {
+            display: none;
+            background: #dcfce7;
+            color: #166534;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-top: 1rem;
+            font-weight: 600;
+            border: 1px solid #bbf7d0;
+        }
+
+        /* Modal for Directions */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 450px;
+            width: 90%;
+            position: relative;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--secondary-color);
+            color: #94a3b8;
+            text-align: center;
+            padding: 2rem 5%;
+            margin-top: 4rem;
+        }
+
+        @media (max-width: 600px) {
+            .hero h1 { font-size: 1.8rem; }
+            nav ul { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Section -->
+    <header>
+        <a href="#" class="logo">Mapa <span>LPU</span></a>
+        <nav>
+            <ul>
+                <li><a href="#locations">Locations</a></li>
+                <li><a href="#campus-map">Interactive Map</a></li>
+                <li><a href="#contribute">Add Missing Place</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero & Search Section -->
+    <section class="hero">
+        <h1>Navigate Lovely Professional University</h1>
+        <p>Find academic blocks, hostels, food courts, libraries, and sports complexes across the LPU campus effortlessly.</p>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search for Block 32, Uni Mall, Baldev Raj Mittal Auditorium...">
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main id="locations">
+        <!-- Category Filters -->
+        <div class="filters">
+            <button class="filter-btn active" data-category="all">All Locations</button>
+            <button class="filter-btn" data-category="academic">Academic Blocks</button>
+            <button class="filter-btn" data-category="food">Food & Shopping</button>
+            <button class="filter-btn" data-category="sports">Sports & Auditorium</button>
+            <button class="filter-btn" data-category="admin">Administration</button>
+        </div>
+
+        <!-- Locations Cards Grid -->
+        <div class="locations-grid" id="locationsGrid">
+            <!-- Cards will be dynamically inserted here via JavaScript -->
+        </div>
+
+        <!-- Embedded Google Map Section -->
+        <section class="map-section" id="campus-map">
+            <h2>Live Campus Overview</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1rem;">Zoom and pan around the Lovely Professional University campus in Phagwara, Punjab.</p>
+            <iframe 
+                class="map-frame"
+                src="https://www.openstreetmap.org/export/embed.html?bbox=75.6950%2C31.2480%2C75.7120%2C31.2610&amp;layer=mapnik&amp;marker=31.2545%2C75.7035" 
+                loading="lazy">
+            </iframe>
+        </section>
+
+        <!-- User Contribution Section for Missing Blocks/Places -->
+        <section class="contribute-section" id="contribute">
+            <h2>Missed a Block or Hangout Spot? Add It Here!</h2>
+            <p>Help fellow students and visitors navigate LPU better by adding missing academic blocks, hostels, food kiosks, or landmarks.</p>
+            
+            <form class="contribute-form" id="addLocationForm">
+                <div class="form-group">
+                    <label for="locName">Block / Location Name *</label>
+                    <input type="text" id="locName" placeholder="e.g., Block 55 - Polytechnic or NK Food Court" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="locCategory">Category *</label>
+                    <select id="locCategory" required>
+                        <option value="academic">Academic Block</option>
+                        <option value="food">Food & Shopping</option>
+                        <option value="sports">Sports & Auditorium</option>
+                        <option value="admin">Administration</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="locZone">Zone / Sector *</label>
+                    <input type="text" id="locZone" placeholder="e.g., Zone 4 (Near Boys Hostel 4)" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="locLandmark">Nearest Landmark *</label>
+                    <input type="text" id="locLandmark" placeholder="e.g., Opposite Uni Hospital" required>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="locDesc">Short Description *</label>
+                    <textarea id="locDesc" rows="2" placeholder="Briefly describe what's inside or why students visit this place..." required></textarea>
+                </div>
+
+                <div class="form-group full-width">
+                    <button type="submit" class="submit-btn">+ Add to Campus Map</button>
+                </div>
+            </form>
+
+            <div class="toast-banner" id="successToast">
+                Thank you! Your suggested location has been added to the directory above.
+            </div>
+        </section>
+    </main>
+
+    <!-- Directions Info Modal -->
+    <div class="modal" id="infoModal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeModal">&times;</span>
+            <h2 id="modalTitle" style="margin-bottom: 10px; color: var(--primary-color);">Location Name</h2>
+            <p id="modalZone" style="font-weight: bold; margin-bottom: 10px; color: var(--secondary-color);">Zone Info</p>
+            <p id="modalDesc" style="color: var(--text-muted); margin-bottom: 15px;">Directions and details.</p>
+            <div style="background: var(--bg-light); padding: 12px; border-radius: 8px; font-size: 0.9rem;">
+                <strong>Nearest Landmark:</strong> <span id="modalLandmark">Main Gate</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 Mapa LPU - Campus Navigation Guide. Built for Students & Visitors.</p>
+    </footer>
+
+    <!-- JavaScript for Search, Filtering, and Modal -->
+    <script>
+        // Default Campus Location Data
+        const defaultLocations = [
+            {
+                name: "Block 32 - Division of Admissions",
+                category: "admin",
+                badgeText: "Administration",
+                zone: "Zone 1 (Near Main Gate)",
+                description: "Central hub for student admissions, international affairs, and administrative queries.",
+                landmark: "Main Entrance Gate 1"
+            },
+            {
+                name: "Uni Mall & Food Court",
+                category: "food",
+                badgeText: "Food & Shopping",
+                zone: "Zone 2 (Central Campus)",
+                description: "Multi-story shopping complex featuring food courts, stationery shops, banks, and student lounges.",
+                landmark: "Block 14 / Central Library"
+            },
+            {
+                name: "Block 33 & 34 - Computer Science",
+                category: "academic",
+                badgeText: "Academic Block",
+                zone: "Zone 3 (Tech Sector)",
+                description: "School of Computer Science and Engineering with specialized coding labs and lecture halls.",
+                landmark: "Robo Park"
+            },
+            {
+                name: "Shanti Devi Mittal Auditorium",
+                category: "sports",
+                badgeText: "Auditorium",
+                zone: "Zone 2 (Cultural Hub)",
+                description: "Grand auditorium hosting convocations, cultural fests, celebrity concerts, and major seminars.",
+                landmark: "Uni Hospital"
+            },
+            {
+                name: "Central Library (Block 37)",
+                category: "academic",
+                badgeText: "Academic Block",
+                zone: "Zone 2 (Central Campus)",
+                description: "Massive multi-floor library with digital archives, quiet reading rooms, and research journals.",
+                landmark: "Uni Mall"
+            },
+            {
+                name: "Indoor Sports Complex",
+                category: "sports",
+                badgeText: "Sports",
+                zone: "Zone 4 (Sports Sector)",
+                description: "Equipped with Olympic-size swimming pool, badminton courts, shooting range, and gymnasium.",
+                landmark: "Boys Hostel 1"
+            }
+        ];
+
+        // Load user-submitted locations from localStorage if available
+        let savedLocations = [];
+        try {
+            savedLocations = JSON.parse(localStorage.getItem('mapaLpuUserLocations')) || [];
+        } catch (e) {
+            savedLocations = [];
+        }
+
+        const campusLocations = [...defaultLocations, ...savedLocations];
+
+        const locationsGrid = document.getElementById('locationsGrid');
+        const searchInput = document.getElementById('searchInput');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const addLocationForm = document.getElementById('addLocationForm');
+        const successToast = document.getElementById('successToast');
+        
+        // Modal elements
+        const modal = document.getElementById('infoModal');
+        const closeModal = document.getElementById('closeModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalZone = document.getElementById('modalZone');
+        const modalDesc = document.getElementById('modalDesc');
+        const modalLandmark = document.getElementById('modalLandmark');
+
+        let currentCategory = 'all';
+
+        // Function to render location cards
+        function renderLocations(locations) {
+            locationsGrid.innerHTML = '';
+
+            if (locations.length === 0) {
+                locationsGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">No matching campus locations found.</p>';
+                return;
+            }
+
+            locations.forEach(loc => {
+                const card = document.createElement('div');
+                card.className = 'location-card';
+                card.innerHTML = `
+                    <div>
+                        <span class="badge ${loc.category}">${loc.badgeText}</span>
+                        <h3>${loc.name}</h3>
+                        <p>${loc.description}</p>
+                    </div>
+                    <div class="card-footer">
+                        <span>📍 ${loc.zone}</span>
+                        <button class="directions-btn" onclick="openDirections('${loc.name.replace(/'/g, "\\'")}')">Details</button>
+                    </div>
+                `;
+                locationsGrid.appendChild(card);
+            });
+        }
+
+        // Filter and Search Logic
+        function filterData() {
+            const query = searchInput.value.toLowerCase();
+            const filtered = campusLocations.filter(loc => {
+                const matchesCategory = currentCategory === 'all' || loc.category === currentCategory;
+                const matchesSearch = loc.name.toLowerCase().includes(query) || 
+                                      loc.description.toLowerCase().includes(query) ||
+                                      loc.zone.toLowerCase().includes(query);
+                return matchesCategory && matchesSearch;
+            });
+            renderLocations(filtered);
+        }
+
+        // Event Listeners for Category Buttons
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentCategory = btn.getAttribute('data-category');
+                filterData();
+            });
+        });
+
+        // Event Listener for Search Input
+        searchInput.addEventListener('input', filterData);
+
+        // Open Modal Function
+        window.openDirections = function(locationName) {
+            const loc = campusLocations.find(item => item.name === locationName);
+            if (loc) {
+                modalTitle.textContent = loc.name;
+                modalZone.textContent = `📍 ${loc.zone}`;
+                modalDesc.textContent = loc.description;
+                modalLandmark.textContent = loc.landmark;
+                modal.style.display = 'flex';
+            }
+        };
+
+        // Close Modal Events
+        closeModal.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        // Handle User Submitting a Missing Location
+        const categoryLabels = {
+            academic: "Academic Block",
+            food: "Food & Shopping",
+            sports: "Sports & Auditorium",
+            admin: "Administration"
+        };
+
+        addLocationForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const name = document.getElementById('locName').value.trim();
+            const category = document.getElementById('locCategory').value;
+            const zone = document.getElementById('locZone').value.trim();
+            const landmark = document.getElementById('locLandmark').value.trim();
+            const description = document.getElementById('locDesc').value.trim();
+
+            const newLocation = {
+                name,
+                category,
+                badgeText: categoryLabels[category] || "Campus Spot",
+                zone,
+                description,
+                landmark
+            };
+
+            // Add to active list and persist in browser localStorage
+            campusLocations.unshift(newLocation);
+            savedLocations.unshift(newLocation);
+            try {
+                localStorage.setItem('mapaLpuUserLocations', JSON.stringify(savedLocations));
+            } catch (err) {
+                console.warn('Could not save to localStorage:', err);
+            }
+
+            // Re-render cards and reset form
+            filterData();
+            addLocationForm.reset();
+
+            // Show confirmation toast
+            successToast.style.display = 'block';
+            setTimeout(() => {
+                successToast.style.display = 'none';
+            }, 4000);
+        });
+
+        // Initial Render
+        renderLocations(campusLocations);
+    </script>
+</body>
+</html>
+```
